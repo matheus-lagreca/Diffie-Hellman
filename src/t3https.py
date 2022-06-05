@@ -50,5 +50,11 @@ BTest = pow(gInt, bTestInt, pInt)
 
 # usando o BTest ate receber o B do avelino
 V = pow(bTestInt, aInt, gInt)
-print(V)
-
+# transformando o V de int para Hexa
+hexV = hex(V).encode('utf-8')
+# sha256 do V 
+S = hashlib.sha256(hexV).digest()
+# pegando os primeiros 128 bites em hexa
+SHex = S.hex()
+iv = SHex[:16]
+print(iv)
