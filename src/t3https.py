@@ -58,9 +58,9 @@ b = "0xB10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E2867
 B = pow(gInt, int(b,0), pInt)
 V = pow(B, aInt, pInt)
 hash = hashlib.sha256()
-#hash.update(V.to_bytes(129, "big"))
-hash.update(hex(V).encode('utf-8'))
-S = hash.digest()[:16].hex()[2:]
+hash.update(V.to_bytes(129, "big"))
+#hash.update(hex(V).encode('utf-8'))
+S = hash.digest()[:16].hex()
 S = S.encode()
 print("S", S)
 #
@@ -68,10 +68,18 @@ key = S
 iv = os.urandom(16)
 cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
 encryptor = cipher.encryptor()
-ct = encryptor.update(b"a secret message") + encryptor.finalize()
+padder = padding.PKCS7(block_size=128).padder()
+padded_data = padder.update(b"11111111111111112222222222")
+padded_data += padder.finalize()
+print("pd", padded_data)
+ct = encryptor.update(padded_data) + encryptor.finalize()
+print("iv", iv)
 print("ct", ct)
+
+unpadder = padding.PKCS7(block_size=128).unpadder()
 decryptor = cipher.decryptor()
 xxx = decryptor.update(ct) + decryptor.finalize()
+xxx = unpadder.update(xxx) + unpadder.finalize()
 print(xxx)
 
 
