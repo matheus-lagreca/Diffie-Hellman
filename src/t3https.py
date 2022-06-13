@@ -46,39 +46,6 @@ print("hexA", hexA)
 # Receber B calcular V = B^a mod p
 #
 # calcular S = SHA256(V)
-#
-
-# TESTE local
-# fake B
-
-# b = "0xB10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4320"
-# B = pow(gInt, int(b,0), pInt)
-# V = pow(B, aInt, pInt)
-# hash = hashlib.sha256()
-# hash.update(V.to_bytes(129, "big"))
-# #hash.update(hex(V).encode('utf-8'))
-# S = hash.digest()[:16].hex()
-# S = S.encode()
-# print("S", S)
-# #
-# key = S
-# iv = os.urandom(16)
-# cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-# encryptor = cipher.encryptor()
-# padder = padding.PKCS7(block_size=128).padder()
-# padded_data = padder.update(b"11111111111111112222222222")
-# padded_data += padder.finalize()
-# print("pd", padded_data)
-# ct = encryptor.update(padded_data) + encryptor.finalize()
-# print("iv", iv)
-# print("ct", ct)
-
-# unpadder = padding.PKCS7(block_size=128).unpadder()
-# decryptor = cipher.decryptor()
-# xxx = decryptor.update(ct) + decryptor.finalize()
-# xxx = unpadder.update(xxx) + unpadder.finalize()
-# print(xxx)
-
 # #######################
 # Avelino B
 #B = "0x009A77FFA7E6F55530E203DAA030FA1E4F6586B65940794DF32183D89506AE9C0286D42090286D2F549987E33AF7C514AABA7AC5A98D1E65ACAF7AE6896ACA3C7C8A225E8823341B49CCEDBDF2BFE2160AA22CA914B13AF42D8B8FFB6C7C04E37B7EADB01046EFAF5561A84D008C306AA0204BA42EF61A1649EE2395C6B8475BA0"
@@ -100,11 +67,11 @@ print("128 bits de S", S)
 # Kops msg
 msg = "8c3acf5f0edbb7c9396aa9f4fc6e2f6c6e6ea35c67db5e12cc6d23dafb8bc5d2c436eae17853563eb2558b7f329b52cd"
 bytesMsg = bytes.fromhex(msg)
+print("bytesMsg", bytesMsg)
 # # AES CBC e padding
 # # [128 bits com IV][msg] em hexa
 # # decifrar a msg e enviar ela de volta invertida em hexa
 # # https://stackoverflow.com/questions/57544299/valueerror-invalid-padding-bytes-when-decrypting-with-aes256
-ivEnc = os.urandom(16)
 ivDec, bytesMsg = bytesMsg[:16], bytesMsg[16:]
 # # Setup
 cipher = Cipher(algorithms.AES(S), modes.CBC(ivDec))
@@ -120,33 +87,41 @@ result = pMsg.hex()
 print(result)
 
 # gera
+print("---------------------------------------------- Encode ------------------------------------------------------")
+ivEnc = os.urandom(16)
 myMsg = "Schell & Gugu eram namoradinhos no Educa-Mais"
 myMsg = myMsg.encode('utf-8')
-print(myMsg)
+print("MSG", myMsg)
 encryptor = cipher.encryptor()
 padder = padding.PKCS7(block_size=128).padder()
 padded_data = padder.update(myMsg)
-print("update", padded_data)
 padded_data += padder.finalize()
 print("finalize ", padded_data)
 ct = encryptor.update(padded_data) + encryptor.finalize()
 print("iv", ivEnc)
 print("ct", ct)
 
-result = ivEnc+ct
+print("--------------------------------------------- results -------------------------------------------------------")
+result =ivEnc+ct
+print("ivEnc", ivEnc.hex())
+print("ct", ct.hex())
 print("result", result)
-print("hex result", result.hex())
+
+bytesR = bytes.fromhex(result.hex())
+print("hex result", bytesR) 
 
 
-print("decode------------------------")
-
-c2 = Cipher(algorithms.AES(S), modes.CBC(ivEnc))
+print("-------------------------------------------- decode ---------------------------------------------------------")
+ivDec2, bytesR = bytesR[:16], bytesR[16:] 
+print("ivDec2", ivDec2)
+print("bytesMsg2", bytesR)
+c2 = Cipher(algorithms.AES(S), modes.CBC(ivDec2))
 dcry = c2.decryptor()
 unpd = padding.PKCS7(block_size=128).unpadder()
-testMsg = dcry.update(result + dcry.finalize()
-print(testMsg)
+testMsg = dcry.update(bytesR) + dcry.finalize()
+print("tMsg", testMsg)
 testMsg = unpd.update(testMsg) + unpd.finalize()
-print(testMsg)
+print("msg", testMsg)
 
 
 
@@ -156,33 +131,5 @@ print(testMsg)
 
 
 
-
-
-
-
-## decryption
-#iv = b64decode('iv')
-#ct = b64decode(msg)
-#cipher = AES.new(S, AES.MODE_CBC, iv)
-#pt = unpad(cipher.decrypt(ct), AES.block_size)
-#print("msg: ", pt)
-
-#####################################
-##### teste
-##### troquei de chave com o kops
-
-# BTest = "0x938d9ec609cbda896542654e2fec603c276934bc1aae9c4bfb72e2df80b00fe19835e6714b682d0825ed23fd0f3a041afa02f78c8bfb057f2e76857df47d9f62ea01574191b7b742876070f598551cdb41ef0800239d6b3270882f7deee59be8f8e3226cd0bfeb510c2afe24671a24d3771dc1259e2c1478cc841c2e14f525ea"
-# BTestInt = int(BTest, 0)
-#####
-##### teste envia e recebe
-# recebe = pow(BTestInt, aInt, pInt)
-#print("envia", envia)
-#print("recebe", recebe)
-
-# VTestHex=hex(recebe).encode('utf-8')
-# sTest = hashlib.sha256(VTestHex).digest()[:16].hex()
-
-#hexSText = sTest.hex()
-# print(sTest)
 
 
