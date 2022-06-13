@@ -11,7 +11,6 @@ import codecs
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 # https://cryptography.io/en/latest/hazmat/primitives/padding/
 from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.backends import default_backend
 
 
 ### old dependencies
@@ -39,10 +38,8 @@ gInt = int(g, 0)
 A = pow(gInt, aInt, pInt)
 #print("A", A)
 # transforma A em Hexa
-#hexA = hex(A)[2:]
-#print("hexA", hexA)
-
-
+hexA = hex(A)
+print("hexA", hexA)
 #######################################
 
 #######
@@ -54,95 +51,107 @@ A = pow(gInt, aInt, pInt)
 # TESTE local
 # fake B
 
-b = "0xB10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4320"
-B = pow(gInt, int(b,0), pInt)
-V = pow(B, aInt, pInt)
-hash = hashlib.sha256()
-hash.update(V.to_bytes(129, "big"))
-#hash.update(hex(V).encode('utf-8'))
-S = hash.digest()[:16].hex()
-S = S.encode()
-print("S", S)
-#
-key = S
-iv = os.urandom(16)
-cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
-encryptor = cipher.encryptor()
-padder = padding.PKCS7(block_size=128).padder()
-padded_data = padder.update(b"11111111111111112222222222")
-padded_data += padder.finalize()
-print("pd", padded_data)
-ct = encryptor.update(padded_data) + encryptor.finalize()
-print("iv", iv)
-print("ct", ct)
-
-unpadder = padding.PKCS7(block_size=128).unpadder()
-decryptor = cipher.decryptor()
-xxx = decryptor.update(ct) + decryptor.finalize()
-xxx = unpadder.update(xxx) + unpadder.finalize()
-print(xxx)
-
-
-
-
-
-
-
-
-# #######################
-# B = "0x009A77FFA7E6F55530E203DAA030FA1E4F6586B65940794DF32183D89506AE9C0286D42090286D2F549987E33AF7C514AABA7AC5A98D1E65ACAF7AE6896ACA3C7C8A225E8823341B49CCEDBDF2BFE2160AA22CA914B13AF42D8B8FFB6C7C04E37B7EADB01046EFAF5561A84D008C306AA0204BA42EF61A1649EE2395C6B8475BA0"
-# BInt = int(B, 0)
-
-# V = pow(BInt, aInt, pInt)
-# # transformando o V de int para Hexa
-# hexV = hex(V).encode('utf-8')[2:]
-# # sha256 do V
-# # pegando os primeiros 128 bites em bytes
-# #S = hashlib.sha256(hexV).digest()[:16].hex()
-
-
+# b = "0xB10B8F96A080E01DDE92DE5EAE5D54EC52C99FBCFB06A3C69A6A9DCA52D23B616073E28675A23D189838EF1E2EE652C013ECB4AEA906112324975C3CD49B83BFACCBDD7D90C4BD7098488E9C219A73724EFFD6FAE5644738FAA31A4FF55BCCC0A151AF5F0DC8B4BD45BF37DF365C1A65E68CFDA76D4DA708DF1FB2BC2E4A4320"
+# B = pow(gInt, int(b,0), pInt)
+# V = pow(B, aInt, pInt)
 # hash = hashlib.sha256()
 # hash.update(V.to_bytes(129, "big"))
-# #hash.update(hexV)
-# S = hash.digest()[:16].hex()[2:]
+# #hash.update(hex(V).encode('utf-8'))
+# S = hash.digest()[:16].hex()
 # S = S.encode()
-# print("128 bits de S", S)
+# print("S", S)
+# #
+# key = S
+# iv = os.urandom(16)
+# cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+# encryptor = cipher.encryptor()
+# padder = padding.PKCS7(block_size=128).padder()
+# padded_data = padder.update(b"11111111111111112222222222")
+# padded_data += padder.finalize()
+# print("pd", padded_data)
+# ct = encryptor.update(padded_data) + encryptor.finalize()
+# print("iv", iv)
+# print("ct", ct)
 
+# unpadder = padding.PKCS7(block_size=128).unpadder()
+# decryptor = cipher.decryptor()
+# xxx = decryptor.update(ct) + decryptor.finalize()
+# xxx = unpadder.update(xxx) + unpadder.finalize()
+# print(xxx)
 
-
+# #######################
+# Avelino B
+#B = "0x009A77FFA7E6F55530E203DAA030FA1E4F6586B65940794DF32183D89506AE9C0286D42090286D2F549987E33AF7C514AABA7AC5A98D1E65ACAF7AE6896ACA3C7C8A225E8823341B49CCEDBDF2BFE2160AA22CA914B13AF42D8B8FFB6C7C04E37B7EADB01046EFAF5561A84D008C306AA0204BA42EF61A1649EE2395C6B8475BA0"
+# Kops B
+B = "0x852637cd1afbda02989c9b0958ba1476cd44caa31b12d3fff5bec29b560c85185ffd8ed33408465fe853af68810861f8ae6cb74720d3f75dc3a2a9a5857941a52dd7f7b07732802c5e8eaf017e25db626ae27271cbb6ce79dd0e4c73d2a922a23d786a2fc9b10c432c97c88ee5e685cd69e11b95fd3b48bbbe3318fef0dee393"
+BInt = int(B, 0)
+V = pow(BInt, aInt, pInt)
+hash = hashlib.sha256()
+hash.update(V.to_bytes(129, "big"))
+S = hash.digest()[:16].hex()
+#S = S.encode()
+S = bytes.fromhex(S)
+print("128 bits de S", S)
 # ########
 # # Troca de mensagens
-# ########
 # # mensagem cifrada
-# msg = "E48CFC2DA61F029AB6A571EF92255D52E28D51784F890ECF1D13C8B10B3704A267887E4F51CA9B1D918C82B334A82CF49A0A509D89060639EABAF26637A7B8EEC54A96B5F52CC6CCEB4276A550345454CBF9430D00FE3C04009FA023C44A58A40A4DC8B6885F7F0DB3782307907B2AADA9725A11771A967EA5FF6F09EFDCA619"
-# bytesMsg = bytes.fromhex(msg)
-
+# Avelino Msg
+#msg = "E48CFC2DA61F029AB6A571EF92255D52E28D51784F890ECF1D13C8B10B3704A267887E4F51CA9B1D918C82B334A82CF49A0A509D89060639EABAF26637A7B8EEC54A96B5F52CC6CCEB4276A550345454CBF9430D00FE3C04009FA023C44A58A40A4DC8B6885F7F0DB3782307907B2AADA9725A11771A967EA5FF6F09EFDCA619"
+# Kops msg
+msg = "8c3acf5f0edbb7c9396aa9f4fc6e2f6c6e6ea35c67db5e12cc6d23dafb8bc5d2c436eae17853563eb2558b7f329b52cd"
+bytesMsg = bytes.fromhex(msg)
 # # AES CBC e padding
 # # [128 bits com IV][msg] em hexa
 # # decifrar a msg e enviar ela de volta invertida em hexa
-
 # # https://stackoverflow.com/questions/57544299/valueerror-invalid-padding-bytes-when-decrypting-with-aes256
-
-
-# #ivEnc = os.urandom(16)
-# ivDec, bytesMsg = bytesMsg[:16], bytesMsg[16:]
-
+ivEnc = os.urandom(16)
+ivDec, bytesMsg = bytesMsg[:16], bytesMsg[16:]
 # # Setup
-# backend = default_backend()
-# cipher = Cipher(algorithms.AES(S), modes.CBC(ivDec), backend=backend)
-# decryptor = cipher.decryptor()
-
+cipher = Cipher(algorithms.AES(S), modes.CBC(ivDec))
+decryptor = cipher.decryptor()
 # # unpadder
-# #unpadder = padding.PKCS7(block_size=128).unpadder()
+unpadder = padding.PKCS7(block_size=128).unpadder()
 # unpadder = padding.ANSIX923(block_size=128).unpadder()
-# pMsg = decryptor.update(bytesMsg) + decryptor.finalize()
-# print(pMsg)
-# uMsg = unpadder.update(pMsg) + unpadder.finalize()
+pMsg = decryptor.update(bytesMsg) + decryptor.finalize()
+print("pMsg", pMsg)
+pMsg = unpadder.update(pMsg) + unpadder.finalize()
+print("unpaded", pMsg)
+result = pMsg.hex()
+print(result)
+
+# gera
+myMsg = "Schell & Gugu eram namoradinhos no Educa-Mais"
+myMsg = myMsg.encode('utf-8')
+print(myMsg)
+encryptor = cipher.encryptor()
+padder = padding.PKCS7(block_size=128).padder()
+padded_data = padder.update(myMsg)
+print("update", padded_data)
+padded_data += padder.finalize()
+print("finalize ", padded_data)
+ct = encryptor.update(padded_data) + encryptor.finalize()
+print("iv", ivEnc)
+print("ct", ct)
+
+result = ivEnc+ct
+print("result", result)
+print("hex result", result.hex())
 
 
-# print(uMsg.decode)
-# #binary_string = codecs.decode(hexMsg, "hex")
-# #print(str(binary_string, 'utf-8'))
+print("decode------------------------")
+
+c2 = Cipher(algorithms.AES(S), modes.CBC(ivEnc))
+dcry = c2.decryptor()
+unpd = padding.PKCS7(block_size=128).unpadder()
+testMsg = dcry.update(result + dcry.finalize()
+print(testMsg)
+testMsg = unpd.update(testMsg) + unpd.finalize()
+print(testMsg)
+
+
+
+#binary_string = codecs.decode(pMsg, "hex")
+#print(str(binary_string, 'utf-8'))
 # ########################
 
 
