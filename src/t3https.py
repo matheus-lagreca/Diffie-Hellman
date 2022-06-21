@@ -91,41 +91,31 @@ print("---------------------------------------------- Encode -------------------
 ivEnc = os.urandom(16)
 myMsg = invertedMsg
 myMsg = myMsg.encode('utf-8')
-
+# Cipher novo para criptografar
 cEnc = Cipher(algorithms.AES(S), modes.CBC(ivEnc))
 encry = cEnc.encryptor()
+# Adicionando padding
 padder = padding.PKCS7(block_size=128).padder()
 padded_data = padder.update(myMsg)
 padded_data += padder.finalize()
 ct = encry.update(padded_data) + encry.finalize()
 
-
+# printando mensagem invertida com IV
 msgInvertCryp =ivEnc+ct
 print("hex result: ", msgInvertCryp.hex(), "\n") 
 
-
-
-
-
-
-
-
-# Decode Test -> usado para testar
-
-# print("-------------------------------------------- decode ---------------------------------------------------------")
-
-# bytesR = msgInvertCryp 
-# ivDec2, bytesR = bytesR[:16], bytesR[16:]
-# # print("ivDec2", ivDec2)
-# # print("bytesMsg2", bytesR)
-# c2 = Cipher(algorithms.AES(S), modes.CBC(ivDec2))
-# dcry = c2.decryptor()
-# unpd = padding.PKCS7(block_size=128).unpadder()
-# testMsg = dcry.update(bytesR) + dcry.finalize()
-# print("tMsg", testMsg)
-# testMsg = unpd.update(testMsg) + unpd.finalize()
-# print("msg", testMsg)
-# print("result2", testMsg.hex())
-
-
+print("-------------------------------------------- Decode ---------------------------------------------------------")
+# Ultima mensagem recebida
+finalMsg = "62019C19EE03973A5427766CA0392A62307100CB8D2947B4144FBBCBC9E9A128AE007F396BC1C651E5FA1865B29DCBF1235B9F9B6C102D423150FF30C3D91455C3E36BEBDB3FF842D499714F3E317D78B650CA41FF7DFEA0F05A6B843AB660980CA0282BA716434EE6D9D820486E9521894C0F5345CC237DBC498F0810D8F25E5116A02CAFDC79AC6671D5488EFB473CBD9F4B071488CF51D215456FCAE0DA6DF4104744A1E5E7D150C57DB8BBBDA91DBCE992AEFE69E3F37EEFEEA7C3440864"
+bytesR = bytes.fromhex(finalMsg)
+# separando IV da mensagem
+ivDec2, bytesR = bytesR[:16], bytesR[16:]
+# novo cipher
+c2 = Cipher(algorithms.AES(S), modes.CBC(ivDec2))
+dcry = c2.decryptor()
+# tirando o padding
+unpd = padding.PKCS7(block_size=128).unpadder()
+testMsg = dcry.update(bytesR) + dcry.finalize()
+testMsg = unpd.update(testMsg) + unpd.finalize()
+print("Final Msg: ", testMsg.decode(), "\n")
 
